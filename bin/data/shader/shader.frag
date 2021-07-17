@@ -28,11 +28,15 @@ void main () {
     //z0 = fract(z0); // tesselate
 
     // sine & y
-    //z0 = smoothstep(0.0, 1.0, sin(st.y + (u_time/10.0)));
+    z0 = 2.0*abs(st.y - 0.5 - (sin(u_time/3.0)));
+    // smoothest i could shape this scanline...
+    z0 = 3.0*abs(1.0 - st.y - mod(u_time/8.0, 2.0) + 0.5);
+    z0 = clamp(0.0, 1.0, z0);
+
 
     // base on y
-    z0 = st.y;
-    vec4 color_3d = texture3D(tx3d_0, vec3(st.x, st.y,  current_frame_normalized)); 
+    //z0 = st.y;
+    vec4 color_3d = texture3D(tx3d_0, vec3(st.x, st.y, current_frame_normalized+ z0)); 
 
     gl_FragColor = color_3d;
     //gl_FragColor = vec4(vec3(z0), 1.0); // for debug

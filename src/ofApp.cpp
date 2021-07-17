@@ -24,7 +24,7 @@ void ofApp::setup(){
     fbo.allocate(camWidth, camHeight, GL_RGB);
 
     zOffset = 0;
-    depth = 20; // Adjust this size
+    depth = 22; 
 
     vidGrabber.setDeviceID(0);
     vidGrabber.initGrabber(camWidth, camHeight);
@@ -33,15 +33,6 @@ void ofApp::setup(){
 
     //shader.load("", "shader/shader.frag");
     shader.load("shader/shader");
-
-    
-    // Prepare texture?
-
-    do {
-        vidGrabber.update();
-        frameCube.loadData(vidGrabber.getPixels(), 1, 0, 0, zOffset);
-        zOffset = (zOffset + 1) % depth;
-    } while (!zOffset);
 }
 
 //--------------------------------------------------------------
