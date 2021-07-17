@@ -5,7 +5,8 @@ void ofApp::setup(){
     ofSetWindowTitle("camshadez");
     camWidth = 1280;  // try to grab at this size.
     camHeight = 720;
-    ofSetWindowShape(camWidth, camHeight);
+    //ofSetWindowShape(camWidth, camHeight);
+    ofSetFrameRate(30);
 
     //get back a list of devices.
     vector<ofVideoDevice> devices = vidGrabber.listDevices();
@@ -20,9 +21,10 @@ void ofApp::setup(){
         }
     }
 
+    fbo.allocate(camWidth, camHeight, GL_RGB);
 
     zOffset = 0;
-    depth = 20;
+    depth = 20; // Adjust this size
 
     vidGrabber.setDeviceID(0);
     vidGrabber.initGrabber(camWidth, camHeight);
@@ -32,6 +34,14 @@ void ofApp::setup(){
     //shader.load("", "shader/shader.frag");
     shader.load("shader/shader");
 
+    
+    // Prepare texture?
+
+    do {
+        vidGrabber.update();
+        frameCube.loadData(vidGrabber.getPixels(), 1, 0, 0, zOffset);
+        zOffset = (zOffset + 1) % depth;
+    } while (!zOffset);
 }
 
 //--------------------------------------------------------------
@@ -43,13 +53,18 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    shader.begin();
-        shader.setUniform1f("u_time", ofGetElapsedTimef());
-        shader.setUniform2f("u_resolution", camWidth, camHeight);
-        //shader.setUniform1i("tx3d_0", 0);
-        //shader.setUniformTexture("tx0", GL_TEXTURE_3D, frameCube.getTextureData().textureID, 0);
-        ofDrawRectangle(0,0, camWidth, camHeight);
-    shader.end();
+    fbo.begin();
+        shader.begin();
+            shader.setUniform1f("u_time", ofGetElapsedTimef());
+            shader.setUniform2f("u_resolution", camWidth, camHeight);
+            shader.setUniform1f("u_depth", depth);
+            shader.setUniform1f("u_zoffset", zOffset);
+            // 3d texture somehow is bound already...
+            ofDrawRectangle(0,0, camWidth, camHeight);
+        shader.end();
+    fbo.end();
+
+    fbo.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
 }
 
 //--------------------------------------------------------------
