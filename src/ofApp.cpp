@@ -3,32 +3,21 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofSetWindowTitle("camshadez");
-    camWidth = 1280;  // try to grab at this size.
-    camHeight = 720;
-    //ofSetWindowShape(camWidth, camHeight);
-    ofSetFrameRate(30);
-
-    //get back a list of devices.
-    vector<ofVideoDevice> devices = vidGrabber.listDevices();
-
-    for(size_t i = 0; i < devices.size(); i++){
-        if(devices[i].bAvailable) {
-            //log the device
-            ofLogNotice() << devices[i].id << ": " << devices[i].deviceName;
-        } else {
-            //log the device and note it as unavailable
-            ofLogNotice() << devices[i].id << ": " << devices[i].deviceName << " - unavailable ";
-        }
-    }
+    camWidth = 480;  // try to grab at this size.
+    camHeight = 360;
+    //ofSetFrameRate(30);
 
     fbo.allocate(camWidth, camHeight, GL_RGB);
 
     zOffset = 0;
     depth = 22; 
 
-    vidGrabber.setDeviceID(0);
-    vidGrabber.initGrabber(camWidth, camHeight);
+    vidGrabber.load("/tmp/target.mp4");
+    vidGrabber.play();
 
+    singleTexture.allocate(camWidth, camHeight, GL_RGB);
+    frame.allocate(camWidth, camHeight, GL_RGB);
+    pframe.allocate(camWidth, camHeight, GL_RGB);
     frameCube.allocate(camWidth, camHeight, depth, GL_RGB);
 
     //shader.load("", "shader/shader.frag");
@@ -38,12 +27,18 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     vidGrabber.update();
-    frameCube.loadData(vidGrabber.getPixels(), 1, 0, 0, zOffset);
     zOffset = (zOffset + 1) % depth;
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    frame.allocate(camWidth, camHeight, GL_RGB);
+    frame.begin();
+        vidGrabber.draw(0,0);
+    frame.end();
+
+    frame.readToPixels(pframe);
+    frameCube.loadData(pframe, 1, 0, 0, zOffset);
     fbo.begin();
         shader.begin();
             shader.setUniform1f("u_time", ofGetElapsedTimef());
@@ -54,7 +49,6 @@ void ofApp::draw(){
             ofDrawRectangle(0,0, camWidth, camHeight);
         shader.end();
     fbo.end();
-
     fbo.draw(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
 }
 
