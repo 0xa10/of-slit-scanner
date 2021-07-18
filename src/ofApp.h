@@ -24,12 +24,9 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 
         ofFbo fbo;
-        ofFbo frame;
-        ofPixels pframe;
         ofShader shader;
         ofVideoPlayer vidGrabber;
         ofxTexture3d frameCube;
-        ofTexture singleTexture;
         int zOffset;
         int camWidth;
         int camHeight;

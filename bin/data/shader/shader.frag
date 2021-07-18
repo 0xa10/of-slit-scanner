@@ -31,7 +31,7 @@ void main () {
     // sine & y
     //z0 = 2.0*abs(st.y - 0.5 - (sin(u_time/3.0)));
     // smoothest i could shape this scanline...
-    z0 = 3.0*abs(1.0 - st.y - mod(u_time/8.0, 2.0) + 0.5);
+    //z0 = 3.0*abs(1.0 - st.y - mod(u_time/8.0, 2.0) + 0.5);
     //z0 = clamp(0.0, 1.0, z0);
 
 

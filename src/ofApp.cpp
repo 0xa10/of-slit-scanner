@@ -3,21 +3,20 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofSetWindowTitle("camshadez");
-    camWidth = 480;  // try to grab at this size.
-    camHeight = 360;
     //ofSetFrameRate(30);
 
-    fbo.allocate(camWidth, camHeight, GL_RGB);
 
     zOffset = 0;
     depth = 22; 
 
+    vidGrabber.setPixelFormat(OF_PIXELS_RGB);
     vidGrabber.load("/tmp/target.mp4");
     vidGrabber.play();
 
-    singleTexture.allocate(camWidth, camHeight, GL_RGB);
-    frame.allocate(camWidth, camHeight, GL_RGB);
-    pframe.allocate(camWidth, camHeight, GL_RGB);
+    camWidth = vidGrabber.getWidth();  // try to grab at this size.
+    camHeight = vidGrabber.getHeight();
+
+    fbo.allocate(camWidth, camHeight, GL_RGB);
     frameCube.allocate(camWidth, camHeight, depth, GL_RGB);
 
     //shader.load("", "shader/shader.frag");
@@ -32,13 +31,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    frame.allocate(camWidth, camHeight, GL_RGB);
-    frame.begin();
-        vidGrabber.draw(0,0);
-    frame.end();
-
-    frame.readToPixels(pframe);
-    frameCube.loadData(pframe, 1, 0, 0, zOffset);
+    frameCube.loadData(vidGrabber.getPixels(), 1, 0, 0, zOffset);
     fbo.begin();
         shader.begin();
             shader.setUniform1f("u_time", ofGetElapsedTimef());
