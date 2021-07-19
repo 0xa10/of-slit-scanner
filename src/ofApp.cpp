@@ -3,10 +3,10 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofSetWindowTitle("camshadez");
-    camWidth = 1280;  // try to grab at this size.
-    camHeight = 720;
+    camWidth = 640;  // try to grab at this size.
+    camHeight = 480;
     //ofSetWindowShape(camWidth, camHeight);
-    ofSetFrameRate(30);
+    ofSetFrameRate(60);
 
     //get back a list of devices.
     vector<ofVideoDevice> devices = vidGrabber.listDevices();
@@ -24,7 +24,7 @@ void ofApp::setup(){
     fbo.allocate(camWidth, camHeight, GL_RGB);
 
     zOffset = 0;
-    depth = 22; 
+    depth = 128; 
 
     vidGrabber.setDeviceID(0);
     vidGrabber.initGrabber(camWidth, camHeight);
